@@ -1,0 +1,27 @@
+
+# $ sudo kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.2/config/manifests/metallb-native.yaml
+# $ sudo kubectl apply -f metallb-config.yaml
+# This file configures MetalLB to use specific IP addresses for load balancing.
+# It defines two IP address pools, one for IPv4 and one for IPv6, and sets up
+# Layer 2 advertisements for both pools. The IP addresses specified in the pools
+# should be available in your network and not conflict with other devices.
+# Make sure to apply this configuration after setting up MetalLB in your Kubernetes cluster.
+# metallb-config.yaml
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: dualstack-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 192.168.1.188/32
+    - 240b:253:9140:ed00:5054:ff:fe6f:4613/128
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: l2adv
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - dualstack-pool

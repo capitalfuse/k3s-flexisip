@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-ingress
+  namespace: default
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-dns
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    # IPv6 を明示的に有効化（NGINX Ingress Controller の場合）
+    nginx.ingress.kubernetes.io/listen-ipv6: "true"
+    # デュアルスタック用のバインディング
+    nginx.ingress.kubernetes.io/use-ipv6: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - reg.ficusonline.com
+        - lime.ficusonline.com
+      secretName: wildcard-cert-tls
+  rules:
+    - host: reg.ficusonline.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-service
+                port:
+                  number: 80
+    - host: lime.ficusonline.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-service
+                port:
+                  number: 80

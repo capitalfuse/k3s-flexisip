@@ -1,0 +1,34 @@
+# download https://raw.githubusercontent.com/projectcalico/calico/v3.30.2/manifests/calico.yaml
+# and then edit it to add the following lines in the data.cni_network_config section:
+# "ipam": {
+#         "type": "calico-ipam",
+#         "assign_ipv4": "true",
+#         "assign_ipv6": "true"
+#     },
+# and the following lines in the spec.template.spec.containers.env section:
+        # - name: IP6                        
+        #   value: autodetect           
+        # - name: CALICO_IPV6POOL_NAT_OUTGOING     
+        #   value: "true"              
+        # - name: CALICO_IPV6POOL_CIDR       
+        #   value: fd00:10:42::/48
+# Then, kubectl apply -f calico.yaml, # and then apply this file:
+apiVersion: crd.projectcalico.org/v1
+kind: IPPool
+metadata:
+  name: default-ipv4-ippool
+spec:
+  cidr: 10.42.0.0/16
+  ipipMode: Never
+  natOutgoing: true
+  nodeSelector: all()
+---
+apiVersion: crd.projectcalico.org/v1
+kind: IPPool
+metadata:
+  name: default-ipv6-ippool
+spec:
+  cidr: fd00:10:42::/48
+  ipipMode: Never
+  natOutgoing: true
+  nodeSelector: all()

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: phpmyadmin
+  namespace: default
+spec:
+  selector:
+    app: phpmyadmin
+  ports:
+    - protocol: TCP
+      port: 9000
+      targetPort: 9000  # php-fpm listens on 9000 by default

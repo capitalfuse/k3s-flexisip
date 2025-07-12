@@ -1,0 +1,58 @@
+# $ kubectl create secret generic secret-flexisip-conf --from-file=flexisip.conf
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flexisip
+  labels:
+    app: flexisip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flexisip
+  template:
+    metadata:
+      labels:
+        app: flexisip
+    spec:
+      nodeName: worker-node001
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      hostname: flexisip
+      containers:
+      - name: ubuntu-flexisip
+        image: 192.168.1.119:5000/ubuntu-flexisip:20250514
+        imagePullPolicy: Never
+        args: [""]
+        volumeMounts:
+        - name: flexisip-linphone
+          mountPath: /root/.local/share/linphone
+        # - name: flexisip-tmp
+        #   mountPath: /tmp
+        - name: flexisip-conf
+          mountPath: /etc/flexisip/flexisip.conf
+          subPath: flexisip.conf
+        - name: firebase-json
+          mountPath: /etc/flexisip/flexisip-push-notification-firebase-adminsdk-fbsvc-3383e09b3e.json
+          subPath: flexisip-push-notification-firebase-adminsdk-fbsvc-3383e09b3e.json
+        - name: tls-secret
+          mountPath: /etc/letsencrypt
+          readOnly: true
+      volumes:
+      - name: flexisip-linphone
+        persistentVolumeClaim:
+          claimName: flexisip-linphone-pvc
+      # - name: flexisip-tmp
+      #   persistentVolumeClaim:
+      #     claimName: flexisip-tmp-pvc
+      - name: flexisip-conf
+        secret:
+          secretName: secret-flexisip-conf
+      # This secret created in php-fpm/create-configmap-secret.sh
+      - name: firebase-json
+        secret:
+          secretName: secret-firebase-json
+      # This secret created in flexisip/sip-cert.yaml
+      - name: tls-secret
+        secret:
+          secretName: sip-tls-cert

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-fpm
+spec:
+  selector:
+    app: php-fpm
+  ipFamilyPolicy: PreferDualStack
+  ipFamilies:
+    - IPv4
+    - IPv6
+  ports:
+    - protocol: TCP
+      port: 9000
+      targetPort: 9000
+  type: ClusterIP
+

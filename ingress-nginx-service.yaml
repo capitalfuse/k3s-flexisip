@@ -1,0 +1,25 @@
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.3/deploy/static/provider/baremetal/deploy.yaml
+# Then, kubectl apply -f ingress-nginx-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/component: controller
+  ipFamilyPolicy: PreferDualStack
+  ipFamilies:
+    - IPv4
+    - IPv6
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      #nodePort: 30080
+    - name: https
+      port: 443
+      targetPort: https
+      #nodePort: 30443

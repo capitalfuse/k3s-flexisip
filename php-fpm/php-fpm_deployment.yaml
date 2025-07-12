@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-fpm
+  labels:
+    app: php-fpm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php-fpm
+  template:
+    metadata:
+      labels:
+        app: php-fpm
+    spec:
+      containers:
+        - name: php-fpm
+          image: 192.168.1.119:5000/php-fpm-8.2:20250514
+          imagePullPolicy: IfNotPresent 
+          args: ["php-fpm"]
+          volumeMounts:
+            - name: flexiapi
+              mountPath: /var/www/html/flexiapi
+            - name: firebase-json
+              mountPath: /etc/flexisip/flexisip-push-notification-firebase-adminsdk-fbsvc-3383e09b3e.json
+              subPath: flexisip-push-notification-firebase-adminsdk-fbsvc-3383e09b3e.json
+            - name: hft-conf
+              mountPath: /etc/flexisip-http-file-transfer-server/flexisip-http-file-transfer-server.conf
+              subPath: flexisip-http-file-transfer-server.conf
+              readOnly: true
+            - name: lime-conf
+              mountPath: /etc/lime-server/lime-server.conf
+              subPath: lime-server.conf
+            - name: php-ini
+              mountPath: /usr/local/etc/php/php.ini
+              subPath: php.ini
+            - name: lime
+              mountPath: /var/www/html/lime
+            - name: xmlrpc
+              mountPath: /opt/belledonne-communications/share/flexisip-account-manager/xmlrpc
+            - name: hft
+              mountPath: /opt/belledonne-communications/share/flexisip-http-file-transfer-server
+            - name: hft-tmp
+              mountPath: /var/opt/belledonne-communications/flexisip-http-file-transfer-tmp
+            # - name: flexisip-tmp
+            #   mountPath: /tmp
+            - name: php-errors-log
+              mountPath: /var/log/php/php_errors.log
+              subPath: php_errors.log
+            - name: pusher-log
+              mountPath: /var/opt/belledonne-communications/log/flexisip/flexisip-pusher.log
+              subPath: flexisip-pusher.log
+            - name: hft-log
+              mountPath: /var/opt/belledonne-communications/log/flexisip-http-file-transfer-server.log
+              subPath: flexisip-http-file-transfer-server.log
+            - name: lime-log
+              mountPath: /var/opt/belledonne-communications/log/lime-server
+            # - name: flexiapi-env
+            #   mountPath: /var/www/html/flexiapi/.env
+            #   subPath: .env
+      volumes:
+        - name: firebase-json
+          secret:
+            secretName: secret-firebase-json
+        - name: hft-conf
+          secret:
+            secretName: hft-conf-secret
+        - name: lime-conf
+          secret:
+            secretName: lime-server-conf-secret
+        - name: php-ini
+          configMap:
+            name: php-ini-config
+        - name: flexiapi
+          persistentVolumeClaim:
+            claimName: flexiapi-pvc
+        - name: flexiapi-env
+          secret:
+            secretName: flexiapi-env-secret
+            items:
+            - key: .env
+              path: .env
+              mode: 0644
+        - name: lime
+          persistentVolumeClaim:
+            claimName: lime-pvc
+        - name: xmlrpc
+          persistentVolumeClaim:
+            claimName: xmlrpc-pvc
+        # already set in apache/apache_pv-pvc.yaml
+        - name: hft
+          persistentVolumeClaim:
+            claimName: hft-pvc
+        # already set in apache/apache_pv-pvc.yaml
+        - name: hft-tmp
+          persistentVolumeClaim:
+            claimName: hft-tmp-pvc
+        # - name: flexisip-tmp
+        #   persistentVolumeClaim:
+        #     claimName: flexisip-tmp-pvc
+        - name: php-errors-log
+          persistentVolumeClaim:
+            claimName: php-errors-log-pvc
+        - name: pusher-log
+          persistentVolumeClaim:
+            claimName: pusher-log-pvc
+        # already set in apache/apache_pv-pvc.yaml
+        - name: hft-log
+          persistentVolumeClaim:
+            claimName: hft-log-pvc
+        - name: lime-log
+          persistentVolumeClaim:
+            claimName: lime-log-pvc
+

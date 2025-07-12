@@ -1,0 +1,35 @@
+# kubectl create secret generic redis-secret-config --from-file=/mnt/nfs/redis/etc/redis.conf
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: docker.io/library/redis:alpine
+        args: ["redis-server", "/etc/redis/redis.conf"]
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: redis-config
+          mountPath: /etc/redis/redis.conf
+          subPath: redis.conf
+          readOnly: true
+        - name: redis-data
+          mountPath: /data
+      volumes:
+      - name: redis-config
+        secret:
+          secretName: redis-secret-config
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: redis-pvc

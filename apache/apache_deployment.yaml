@@ -1,0 +1,53 @@
+# $ kubectl create configmap apache-config --from-file=httpd.conf
+# $ kubectl create secret generic hft-conf-secret --from-file=flexisip-http-file-transfer-server.conf
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apache-deployment
+  labels:
+    app: apache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apache
+  template:
+    metadata:
+      labels:
+        app: apache
+    spec:
+      containers:
+      - name: apache
+        image: httpd:alpine
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: apache-config
+          mountPath: /usr/local/apache2/conf/httpd.conf
+          subPath: httpd.conf
+        # - name: hft-conf
+        #   mountPath: /etc/flexisip-http-file-transfer-server/flexisip-http-file-transfer-server.conf
+        #   subPath: flexisip-http-file-transfer-server.conf
+        - name: hft-dummy
+          mountPath: /opt/belledonne-communications/share/flexisip-http-file-transfer-server
+        - name: hft-tmp
+          mountPath: /var/opt/belledonne-communications/flexisip-http-file-transfer-tmp
+        # - name: hft-log
+        #   mountPath: /var/opt/belledonne-communications/log/flexisip-http-file-transfer-server.log
+        #   subPath: flexisip-http-file-transfer-server.log
+      volumes:
+      - name: apache-config
+        configMap:
+          name: apache-config
+      # - name: hft-conf
+      #   secret:
+      #     secretName: hft-conf-secret
+      - name: hft-dummy
+        emptyDir: {}
+      - name: hft-tmp
+        persistentVolumeClaim:
+          claimName: hft-tmp-pvc
+      # - name: hft-log
+      #   persistentVolumeClaim:
+      #     claimName: hft-log-pvc

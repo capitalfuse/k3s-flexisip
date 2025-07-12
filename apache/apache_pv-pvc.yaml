@@ -1,0 +1,91 @@
+# hft PV
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hft-pv
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: manual
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 192.168.1.119
+    path: /mnt/k3s/hft
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hft-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: manual
+  volumeName: hft-pv
+      
+---
+# hft-tmp PV
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hft-tmp-pv
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: manual
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 192.168.1.119
+    path: /mnt/k3s/hft-tmp
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hft-tmp-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: manual
+  volumeName: hft-tmp-pv
+      
+---
+# hft-log PV
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hft-log-pv
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: manual
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 192.168.1.119
+    path: /mnt/k3s/log
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hft-log-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: manual
+  volumeName: hft-log-pv

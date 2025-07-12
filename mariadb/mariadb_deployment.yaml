@@ -1,0 +1,56 @@
+# secret.yaml（事前に作成）
+# $ kubectl create secret generic mariadb-secret --from-env-file=/mnt/nfs/.env
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mariadb-statefullset
+  labels:
+    app: mariadb
+spec:
+  serviceName: mariadb-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+      - name: mariadb-flexisip
+        image: docker.io/library/mariadb:11.7
+        args:
+          - "--event-scheduler=ON"
+          - "--max-connections=300"
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-secret
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-secret
+              key: MYSQL_PASSWORD
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-secret
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-secret
+              key: MYSQL_DATABASE
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mariadb-storage
+      volumes:
+      - name: mariadb-storage
+        persistentVolumeClaim:
+          claimName: mariadb-pvc

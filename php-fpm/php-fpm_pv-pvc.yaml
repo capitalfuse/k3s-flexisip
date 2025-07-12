@@ -1,0 +1,201 @@
+# flexiapi
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: flexiapi-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes: [ReadWriteMany]
+  storageClassName: manual
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 192.168.1.119
+    path: /mnt/k3s/flexisip-account-manager/flexiapi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: flexiapi-pvc
+spec:
+  accessModes: [ReadWriteMany]
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: flexiapi-pv
+  storageClassName: manual
+
+---
+# lime
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: lime-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes: [ReadWriteMany]
+  storageClassName: manual
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 192.168.1.119
+    path: /mnt/k3s/lime-server/lime
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lime-pvc
+spec:
+  accessModes: [ReadWriteMany]
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: lime-pv
+  storageClassName: manual
+
+---
+# xmlrpc
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: xmlrpc-pv
+spec:
+  capacity:
+    storage: 10Mi
+  accessModes: [ReadWriteMany]
+  storageClassName: manual
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 192.168.1.119
+    path: /mnt/k3s/xmlrpc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: xmlrpc-pvc
+spec:
+  accessModes: [ReadWriteMany]
+  resources:
+    requests:
+      storage: 10Mi
+  volumeName: xmlrpc-pv
+  storageClassName: manual
+
+---
+# tmp # root:root # 0777
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: flexisip-tmp-pv
+# spec:
+#   capacity:
+#     storage: 100Mi
+#   accessModes: [ReadWriteMany]
+#   storageClassName: manual
+#   persistentVolumeReclaimPolicy: Retain
+#   nfs:
+#     server: 192.168.1.119
+#     path: /mnt/k3s/tmp
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: flexisip-tmp-pvc
+# spec:
+#   accessModes: [ReadWriteMany]
+#   resources:
+#     requests:
+#       storage: 100Mi
+#   volumeName: flexisip-tmp-pv
+#   storageClassName: manual
+
+---
+# lime-log
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: lime-log-pv
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes: [ReadWriteMany]
+  storageClassName: manual
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 192.168.1.119
+    path: /mnt/k3s/lime-server/log/lime-server
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lime-log-pvc
+spec:
+  accessModes: [ReadWriteMany]
+  resources:
+    requests:
+      storage: 500Mi
+  volumeName: lime-log-pv
+  storageClassName: manual
+
+
+---
+# php-errors-log PV
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: php-errors-log-pv
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: manual
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 192.168.1.119
+    path: /mnt/k3s/log
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: php-errors-log-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: manual
+  volumeName: php-errors-log-pv
+
+---
+# pusher-log PV
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pusher-log-pv
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: manual
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 192.168.1.119
+    path: /mnt/k3s/log
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pusher-log-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: manual
+  volumeName: pusher-log-pv

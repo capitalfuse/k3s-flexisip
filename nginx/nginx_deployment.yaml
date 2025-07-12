@@ -1,0 +1,49 @@
+# Nginx Deployment
+# $ kubectl create configmap nginx-config --from-file=default.conf
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /var/www/html/flexiapi/public
+          name: public
+          subPath: public
+        - mountPath: /var/www/html/lime
+          name: lime-dummy
+        - mountPath: /etc/nginx/conf.d/default.conf
+          name: nginx-conf
+          subPath: default.conf
+          readOnly: true
+        - mountPath: /var/www/html/phpmyadmin
+          name: phpmyadmin-pvc
+          readOnly: true
+      hostname: nginx-flexisip
+      volumes:
+      - name: public
+        persistentVolumeClaim:
+          claimName: flexiapi-pvc
+      - name: lime-dummy
+        emptyDir: {}
+      - name: nginx-conf
+        configMap:
+          name: nginx-config
+      - name: phpmyadmin-pvc
+        persistentVolumeClaim: 
+          claimName: phpmyadmin
+          
+

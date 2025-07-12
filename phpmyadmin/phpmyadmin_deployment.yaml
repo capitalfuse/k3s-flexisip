@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phpmyadmin
+  template:
+    metadata:
+      labels:
+        app: phpmyadmin
+    spec:
+      volumes:
+        - name: html-volume
+          persistentVolumeClaim:
+            claimName: phpmyadmin
+
+      initContainers:
+        - name: copy-phpmyadmin
+          image: docker.io/phpmyadmin/phpmyadmin:fpm-alpine
+          command: ["/bin/sh", "-c"]
+          args:
+            - cp -a /var/www/html/* /mnt/html/
+          volumeMounts:
+            - name: html-volume
+              mountPath: /mnt/html
+
+      containers:
+        - name: phpmyadmin-fpm
+          image: docker.io/phpmyadmin/phpmyadmin:fpm-alpine
+          args: ["php-fpm"]
+          env:
+            - name: PMA_HOST
+              value: mariadb-service
+            - name: PMA_PORT
+              value: "3306"
+            - name: PMA_ABSOLUTE_URI
+              value: https://reg.ficusonline.com/phpmyadmin
+          volumeMounts:
+            - name: html-volume
+              mountPath: /var/www/html
